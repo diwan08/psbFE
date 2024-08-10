@@ -1,24 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import AdminLogin from './components/adminLogin';
+import AdminDashboard from './components/adminDashboard';
+import SantriList from './components/SantriList';
+import AddSantri from './components/AddSantri';
+// import Home from './components/Home';
+// import SantriTable from './components/santri'; // Import komponen tabel
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        {/* <Route path='/home' element={<Home/>} /> */}
+        <Route path="/" element={<AdminLogin />} />
+        <Route path="/admin/datapendaftaransantri" element={<SantriList />} />
+        <Route path="/add-santri" element={<AddSantri />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      </Routes>
+    </Router>
   );
 }
 

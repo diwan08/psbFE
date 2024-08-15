@@ -1,66 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styled from 'styled-components';
-import Footer from './Footer';
+import { Container, Row, Col,  Spinner } from 'react-bootstrap';
+import BASE_URL from './config';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
-import BASE_URL from './config';
+import Footer from './Footer';
+import './dashboard.css'
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  margin-top: 6px
-`;
-
-const MainContent = styled.div`
-  display: flex;
-  flex: 1;
-  background-color: #f4f6f9;
-`;
-
-const ContentArea = styled.div`
-  flex: 1;
-  padding: 20px;
-  margin-left: 250px;  /* Adjust based on your sidebar width */
-`;
-
-const DashboardContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px; /* Space between cards */
-  padding: 20px;
-`;
-
-const StatCard = styled.div`
-  background: linear-gradient(135deg, #e0f7fa, #b9fbc0); /* Gradient background */
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow */
-  width: calc(33% - 20px); /* Adjust width to fit 3 cards per row */
-  text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
-  
-  &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
-  }
-`;
-
-const StatTitle = styled.h3`
-  font-size: 20px;
-  color: #333;
-  margin-bottom: 15px;
-`;
-
-const StatValue = styled.p`
-  font-size: 40px;
-  font-weight: bold;
-  color: #007bff;
-  margin: 0;
-`;
-
-const HomeDashboard = () => {
+function Home() {
   const [data, setData] = useState({
     total_santri: 0,
     total_belum: 0,
@@ -69,56 +16,118 @@ const HomeDashboard = () => {
     total_tolak: 0,
     total_pendaftar: 0,
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/homeData`)
-      .then(response => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/HomeData`);
         setData(response.data);
-      })
-      .catch(error => {
-        console.error("There was an error fetching the data!", error);
-      });
+        setLoading(false);
+      } catch (err) {
+        setError('Gagal memuat data');
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  if (loading) {
+    return (
+      <Container className="text-center mt-5">
+        <Spinner animation="border" variant="primary" />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="text-center mt-5">
+        <p>{error}</p>
+      </Container>
+    );
+  }
 
   return (
     <>
-    <Navbar />
-    <Sidebar />
-      <Wrapper>
-        <MainContent>
-          <ContentArea>
-            <DashboardContainer>
-              <StatCard>
-                <StatTitle>Total Santri</StatTitle>
-                <StatValue>{data.total_santri}</StatValue>
-              </StatCard>
-              <StatCard>
-                <StatTitle>Total Pendaftar</StatTitle>
-                <StatValue>{data.total_pendaftar}</StatValue>
-              </StatCard>
-              <StatCard>
-                <StatTitle>Total Belum Bayar</StatTitle>
-                <StatValue>{data.total_belum}</StatValue>
-              </StatCard>
-              <StatCard>
-                <StatTitle>Total Lunas</StatTitle>
-                <StatValue>{data.total_lunas}</StatValue>
-              </StatCard>
-              <StatCard>
-                <StatTitle>Total Pending</StatTitle>
-                <StatValue>{data.total_pending}</StatValue>
-              </StatCard>
-              <StatCard>
-                <StatTitle>Total Ditolak</StatTitle>
-                <StatValue>{data.total_tolak}</StatValue>
-              </StatCard>
-            </DashboardContainer>
-          </ContentArea>
-        </MainContent>
-      </Wrapper>
-    <Footer />
+      <Container fluid>
+        <Row>
+          <Col xs={12} md={3} lg={2}>
+            <Sidebar />
+          </Col>
+          <Col xs={12} md={9} lg={10} className="mt-4">
+            <Navbar />
+            <Row className="my-4">
+              <Col>
+                <h2 className="text-center">Dashboard</h2>
+              </Col>
+            </Row>
+            <Row>
+            <div className="col-12 col-sm-6 col-md-3">
+                <div className="info-box">
+                    <span className="info-box-icon bg-info elevation-1"><i className="fas fa-users"></i></span>
+                      <div className="info-box-content">
+                          <span className="info-box-text">Santri</span>
+                          <span className="info-box-number">{data.total_santri}</span>
+                    </div>
+                  </div>
+              </div>
+              <div className="col-12 col-sm-6 col-md-3">
+                <div className="info-box">
+                    <span className="info-box-icon bg-info elevation-1"><i className="fas fa-users"></i></span>
+                      <div className="info-box-content">
+                          <span className="info-box-text">Pendaftar</span>
+                          <span className="info-box-number">{data.total_pendaftar}</span>
+                    </div>
+                  </div>
+              </div>
+              <div className="col-12 col-sm-6 col-md-3">
+                <div className="info-box">
+                    <span className="info-box-icon bg-warning elevation-1"><i className="fas fa-users"></i></span>
+                      <div className="info-box-content">
+                          <span className="info-box-text">Belum Lunas</span>
+                          <span className="info-box-number">{data.total_belum}</span>
+                    </div>
+                  </div>
+              </div>
+            </Row>
+            <Row className="mt-4">
+            <div className="col-12 col-sm-6 col-md-3">
+                <div className="info-box">
+                    <span className="info-box-icon bg-secondary elevation-1"><i className="fas fa-users"></i></span>
+                      <div className="info-box-content">
+                          <span className="info-box-text">Lunas</span>
+                          <span className="info-box-number">{data.total_lunas}</span>
+                    </div>
+                  </div>
+              </div>
+              <div className="col-12 col-sm-6 col-md-3">
+                <div className="info-box">
+                    <span className="info-box-icon bg-info elevation-1"><i className="fas fa-users"></i></span>
+                      <div className="info-box-content">
+                          <span className="info-box-text">Pending</span>
+                          <span className="info-box-number">{data.total_pending}</span>
+                    </div>
+                  </div>
+              </div>
+              <div className="col-12 col-sm-6 col-md-3">
+                <div className="info-box">
+                    <span className="info-box-icon bg-warning elevation-1"><i className="fas fa-users"></i></span>
+                      <div className="info-box-content">
+                          <span className="info-box-text">Di Tolak</span>
+                          <span className="info-box-number">{data.total_tolak}</span>
+                    </div>
+                  </div>
+              </div>
+            </Row>
+          </Col>
+        </Row>
+      </Container>
+      <Footer />
     </>
   );
-};
+}
 
-export default HomeDashboard;
+export default Home;

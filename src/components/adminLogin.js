@@ -17,6 +17,7 @@ const AdminLogin = () => {
       const response = await axios.post(`${BASE_URL}/loginAdmin`, { email, password });
 
       if (response.data.success) {
+        // Simpan token di localStorage
         localStorage.setItem('token', response.data.token);
         navigate('/admin/dashboard');
       } else {
